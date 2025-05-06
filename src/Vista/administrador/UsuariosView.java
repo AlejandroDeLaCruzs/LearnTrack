@@ -1,6 +1,6 @@
 package Vista.administrador;
 
-import Controlador.UsuariosController;
+import Controlador.ValidacionUsuarios.UsuariosController;
 import Modelo.Usuarios.Usuario;
 import javax.swing.*;
 import java.awt.*;

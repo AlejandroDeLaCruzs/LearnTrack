@@ -1,4 +1,4 @@
-package Controlador;
+package Controlador.ValidacionUsuarios;
 
 import Modelo.Ficheros.GestorUsuariosCSV;
 import Modelo.Usuarios.*;
@@ -53,10 +53,7 @@ public class UsuariosController {
     }
 
     public boolean puedeEliminarUsuario(String idAEliminar, String idActual) {
-        if (idAEliminar.equals(idActual))
-            return false;
-
-        return true;
+        return !idAEliminar.equals(idActual);
     }
 
     public void eliminarUsuario(String idAEliminar) {
