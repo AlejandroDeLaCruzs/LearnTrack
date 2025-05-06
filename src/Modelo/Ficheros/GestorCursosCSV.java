@@ -2,6 +2,8 @@ package Modelo.Ficheros;
 
 import Modelo.Cursos.Curso;
 import Modelo.Usuarios.Usuario;
+import Vista.LoginView;
+import Vista.profesor.ProfesorView;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -59,8 +61,13 @@ public class GestorCursosCSV {
         return letras + numeros;
     }
 
-
-
-
+    public static String obtenerCursoPorProfesor(String correoProfesor) {
+        List<Curso> cursos = cargarCursos();
+        for (Curso c : cursos) {
+            if (correoProfesor.equals(c.getIdProfesorAsignado())) {
+                return c.getId();
+            }
+        }
+        return null;
+    }
 }
-
