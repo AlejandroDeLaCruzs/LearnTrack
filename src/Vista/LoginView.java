@@ -8,6 +8,8 @@ import Modelo.Usuarios.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
+import Modelo.Ficheros.GestorCursosCSV;
+import Vista.profesor.ProfesorView;
 
 public class LoginView {
     private JFrame frame;
@@ -118,6 +120,16 @@ public class LoginView {
                         mensajeErrorGeneral.setText("Error interno: usuario no encontrado.");
                     }
                     break;
+                case "Profesor":
+                    String cursoAsignado = GestorCursosCSV.obtenerCursoPorProfesor(correo);
+                    if (cursoAsignado == null) {
+                        JOptionPane.showMessageDialog(frame, "No tienes asignado un curso.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        frame.dispose();
+                        new ProfesorView(cursoAsignado).mostrar();
+                    }
+                    break;
+
 
                 case "El correo no existe":
                     mensajeErrorCorreo.setText(resultado);
