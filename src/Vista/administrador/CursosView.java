@@ -69,7 +69,10 @@ public class CursosView {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel lblId = new JLabel("ID del Curso:");
-        JTextField campoId = new JTextField(20);
+        String idGenerado = generarIdCursoUnico();
+        JTextField campoId = new JTextField(idGenerado, 20);
+        campoId.setEditable(false);
+
 
         JLabel lblNombre = new JLabel("Nombre del Curso:");
         JTextField campoNombre = new JTextField(20);
@@ -161,8 +164,31 @@ public class CursosView {
 
             row.add(new JLabel(nombreProfesor));
 
-            JButton btnAsignar = new JButton("Agregar profesor");
+            JPanel acciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+
+            JButton btnAsignar = new JButton("Asignar profesor");
             btnAsignar.setEnabled(nombreProfesor.equals("No hay profesor asignado"));
+            btnAsignar.addActionListener(e -> asignarProfesor(curso));
+            acciones.add(btnAsignar);
+
+            JButton btnEliminar = new JButton("Eliminar");
+            btnEliminar.addActionListener(e -> {
+                int confirm = JOptionPane.showConfirmDialog(frame,
+                        "¿Estás seguro de que deseas eliminar el curso?",
+                        "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    List<Curso> Cursos = GestorCursosCSV.cargarCursos();
+                    cursos.removeIf(c -> c.getId().equals(curso.getId()));
+                    GestorCursosCSV.guardarCursos(cursos);
+                    actualizarLista();
+                }
+            });
+            acciones.add(btnEliminar);
+
+            row.add(acciones);
+
+            btnAsignar.setEnabled(true);  // Permitir reasignación
+
             btnAsignar.addActionListener(e -> asignarProfesor(curso));
             row.add(btnAsignar);
 
@@ -182,7 +208,11 @@ public class CursosView {
 
         List<Usuario> profesoresDisponibles = GestorUsuariosCSV.cargarUsuarios().stream()
                 .filter(u -> u.getRol().equals("Profesor"))
-                .filter(u -> !GestorCursosCSV.profesorYaAsignado(u.getNombre()))
+                .filter(u -> {
+                    String idCursoActual = curso.getId();
+                    return !GestorCursosCSV.profesorYaAsignado(u.getNombre(), idCursoActual);
+                })
+
                 .collect(Collectors.toList());
 
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -218,4 +248,32 @@ public class CursosView {
 
         dialog.setVisible(true);
     }
+
+    private String generarIdCursoUnico() {
+        String letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        List<Curso> existentes = GestorCursosCSV.cargarCursos();
+        String id;
+        boolean existe;
+
+        do {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 2; i++) {
+                sb.append(letras.charAt((int)(Math.random() * letras.length())));
+            }
+            for (int i = 0; i < 3; i++) {
+                sb.append((int)(Math.random() * 10));
+            }
+            id = sb.toString();
+
+            // Esta variable hace que id no se use directamente dentro del lambda
+            String finalId = id;
+            existe = existentes.stream().anyMatch(c -> c.getId().equals(finalId));
+
+        } while (existe);
+
+        return id;
+    }
+
+
+
 }

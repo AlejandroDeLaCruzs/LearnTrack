@@ -5,6 +5,7 @@ import Modelo.Cursos.Curso;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GestorCursosCSV {
     private static final String RUTA = "data/cursos.csv";
@@ -41,9 +42,20 @@ public class GestorCursosCSV {
         }
     }
 
-    public static boolean profesorYaAsignado(String nombreProfesor) {
-        return cargarCursos().stream()
-                .anyMatch(c -> nombreProfesor.equals(c.getIdProfesorAsignado()));
+    public static boolean profesorYaAsignado(String nombre, String cursoExcluidoId) {
+        List<Curso> cursos = cargarCursos();
+        return cursos.stream()
+                .anyMatch(c -> c.getIdProfesorAsignado().equals(nombre) && !c.getId().equals(cursoExcluidoId));
+    }
+
+    public static String generarNuevoId() {
+        Random random = new Random();
+        String letras = "";
+        for (int i = 0; i < 2; i++) {
+            letras += (char) (random.nextInt(26) + 'A');
+        }
+        String numeros = String.format("%03d", random.nextInt(1000));
+        return letras + numeros;
     }
 
 }
