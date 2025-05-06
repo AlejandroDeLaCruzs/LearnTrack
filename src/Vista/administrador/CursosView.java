@@ -25,6 +25,15 @@ public class CursosView {
         titulo.setFont(new Font("Arial", Font.BOLD, 28));
         panel.add(titulo, BorderLayout.NORTH);
 
+        JButton btnAgregarCurso = new JButton("Agregar Curso");
+        btnAgregarCurso.addActionListener(e -> abrirVentanaAgregarCurso());
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(titulo, BorderLayout.CENTER);
+        topPanel.add(btnAgregarCurso, BorderLayout.EAST);
+
+        panel.add(topPanel, BorderLayout.NORTH);
+
         listaCursos = new JPanel();
         listaCursos.setLayout(new BoxLayout(listaCursos, BoxLayout.Y_AXIS));
         listaCursos.setBorder(BorderFactory.createEmptyBorder(20, 200, 20, 200));
@@ -49,6 +58,74 @@ public class CursosView {
         frame.setVisible(true);
     }
 
+    private void abrirVentanaAgregarCurso() {
+        JDialog dialog = new JDialog(frame, "Agregar Nuevo Curso", true);
+        dialog.setSize(400, 250);
+        dialog.setLayout(new GridBagLayout());
+        dialog.setLocationRelativeTo(frame);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel lblId = new JLabel("ID del Curso:");
+        JTextField campoId = new JTextField(20);
+
+        JLabel lblNombre = new JLabel("Nombre del Curso:");
+        JTextField campoNombre = new JTextField(20);
+
+        JLabel errorLabel = new JLabel("");
+        errorLabel.setForeground(Color.RED);
+
+        JButton btnAceptar = new JButton("Aceptar");
+        JButton btnCancelar = new JButton("Cancelar");
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        dialog.add(lblId, gbc);
+        gbc.gridx = 1;
+        dialog.add(campoId, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
+        dialog.add(lblNombre, gbc);
+        gbc.gridx = 1;
+        dialog.add(campoNombre, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
+        dialog.add(errorLabel, gbc);
+
+        JPanel botones = new JPanel();
+        botones.add(btnAceptar);
+        botones.add(btnCancelar);
+
+        gbc.gridy = 3;
+        dialog.add(botones, gbc);
+
+        btnAceptar.addActionListener(e -> {
+            String id = campoId.getText().trim();
+            String nombre = campoNombre.getText().trim();
+            if (id.isEmpty() || nombre.isEmpty()) {
+                errorLabel.setText("Todos los campos son obligatorios.");
+                return;
+            }
+
+            List<Curso> cursos = GestorCursosCSV.cargarCursos();
+            boolean existe = cursos.stream().anyMatch(c -> c.getId().equals(id));
+            if (existe) {
+                errorLabel.setText("Ya existe un curso con ese ID.");
+                return;
+            }
+
+            cursos.add(new Curso(id, nombre, ""));
+            GestorCursosCSV.guardarCursos(cursos);
+            dialog.dispose();
+            actualizarLista();
+        });
+
+        btnCancelar.addActionListener(e -> dialog.dispose());
+
+        dialog.setVisible(true);
+    }
+
     private void actualizarLista() {
         listaCursos.removeAll();
 
@@ -70,11 +147,22 @@ public class CursosView {
 
             row.add(new JLabel(curso.getId()));
             row.add(new JLabel(curso.getNombre()));
-            String profesor = curso.getIdProfesorAsignado();
-            row.add(new JLabel(profesor));
+            String idProfesor = curso.getIdProfesorAsignado();
+            String nombreProfesor = "No hay profesor asignado";
+            if (!idProfesor.equals("No hay profesor asignado")) {
+                List<Usuario> usuarios = GestorUsuariosCSV.cargarUsuarios();
+                for (Usuario u : usuarios) {
+                    if (u.getNombre().equals(idProfesor)) {
+                        nombreProfesor = u.getNombre();  // ya es el nombre
+                        break;
+                    }
+                }
+            }
+
+            row.add(new JLabel(nombreProfesor));
 
             JButton btnAsignar = new JButton("Agregar profesor");
-            btnAsignar.setEnabled(profesor.equals("No hay profesor asignado"));
+            btnAsignar.setEnabled(nombreProfesor.equals("No hay profesor asignado"));
             btnAsignar.addActionListener(e -> asignarProfesor(curso));
             row.add(btnAsignar);
 

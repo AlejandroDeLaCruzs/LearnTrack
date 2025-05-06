@@ -13,7 +13,7 @@ public class MenuAdministradorView {
 
         JPanel panel = new JPanel(new BorderLayout());
 
-        JLabel titulo = new JLabel("Panel del Administrador", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Menu del Administrador", SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 32));
         panel.add(titulo, BorderLayout.NORTH);
 

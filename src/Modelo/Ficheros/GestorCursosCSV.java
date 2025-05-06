@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GestorCursosCSV {
-    private static final String RUTA = "/data.cursos.csv";
+    private static final String RUTA = "data/cursos.csv";
 
     public static List<Curso> cargarCursos() {
         List<Curso> cursos = new ArrayList<>();
