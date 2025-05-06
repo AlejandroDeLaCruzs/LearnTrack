@@ -46,4 +46,17 @@ public class GestorUsuariosCSV {
             System.err.println("Error al guardar los usuarios: " + e.getMessage());
         }
     }
+
+
+    private static List<Usuario> usuariosPrueba = null;
+
+    public static void setUsuariosPrueba(List<Usuario> lista) {
+        usuariosPrueba = lista;
+    }
+
+    public static List<Usuario> cargarUsuariosPrueba() {
+        if (usuariosPrueba != null) return usuariosPrueba;
+        // Aquí pondrías la lógica real de carga de usuarios si no estás en test
+        return new ArrayList<>();
+    }
 }

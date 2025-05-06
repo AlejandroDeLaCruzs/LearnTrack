@@ -1,6 +1,7 @@
 package Modelo.Ficheros;
 
 import Modelo.Cursos.Curso;
+import Modelo.Usuarios.Usuario;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -57,6 +58,9 @@ public class GestorCursosCSV {
         String numeros = String.format("%03d", random.nextInt(1000));
         return letras + numeros;
     }
+
+
+
 
 }
 
