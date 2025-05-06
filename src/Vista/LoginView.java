@@ -1,9 +1,11 @@
 package Vista;
 
 import Vista.administrador.MenuAdministradorView;
+import Vista.alumno.MenuEstudianteView;
 import Controlador.ValidacionUsuarios.ValidacionLogin;
 import Modelo.Ficheros.GestorUsuariosCSV;
 import Modelo.Usuarios.Usuario;
+
 import javax.swing.*;
 import java.awt.*;
 import Modelo.Ficheros.GestorCursosCSV;
@@ -50,7 +52,7 @@ public class LoginView {
 
         mensajeErrorCorreo = new JLabel("");
         mensajeErrorCorreo.setForeground(Color.RED);
-        gbc.gridx = 2   ;
+        gbc.gridx = 2;
         panelPrincipal.add(mensajeErrorCorreo, gbc);
 
         gbc.gridx = 0;
@@ -63,7 +65,6 @@ public class LoginView {
         gbc.anchor = GridBagConstraints.WEST;
         panelPrincipal.add(campoContrasena, gbc);
         campoContrasena.addActionListener(e -> botonIniciar.doClick());
-
 
         mensajeErrorContrasena = new JLabel("");
         mensajeErrorContrasena.setForeground(Color.RED);
@@ -90,21 +91,31 @@ public class LoginView {
 
             String correo = campoCorreo.getText().trim();
             String contrasena = new String(campoContrasena.getPassword()).trim();
+
             if (!correo.contains("@") || !(correo.endsWith(".com") || correo.endsWith(".es"))) {
                 mensajeErrorCorreo.setText("No cumple con los criterios (@, .com, .es)");
                 return;
             }
+
             String resultado = ValidacionLogin.validar(correo, contrasena);
 
             switch (resultado) {
                 case "Administrador":
+                case "Alumno":
                     Usuario usuario = GestorUsuariosCSV.cargarUsuarios()
-                            .stream().filter(u -> u.getCorreo().equalsIgnoreCase(correo))
-                            .findFirst().orElse(null);
+                            .stream()
+                            .filter(u -> u.getCorreo().equalsIgnoreCase(correo))
+                            .findFirst()
+                            .orElse(null);
+
                     if (usuario != null) {
                         Modelo.Sesion.establecerUsuario(usuario);
                         frame.dispose();
-                        new MenuAdministradorView().mostrar();
+                        if (resultado.equals("Administrador")) {
+                            new MenuAdministradorView().mostrar();
+                        } else {
+                            new MenuEstudianteView().mostrar();
+                        }
                     } else {
                         mensajeErrorGeneral.setText("Error interno: usuario no encontrado.");
                     }
