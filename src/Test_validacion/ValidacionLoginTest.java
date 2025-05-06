@@ -15,7 +15,7 @@ public class ValidacionLoginTest {
     @BeforeEach
     public void setUp() {
         List<Usuario> lista = new ArrayList<>();
-        lista.add(new Test_validacion.UsuarioPrueba("1", "Ana", "ana@email.com", "1234", "Admin"));
+        lista.add(new Test_validacion.UsuarioPrueba("1", "Ana", "ana@email.com", "1234", "Administrador"));
         lista.add(new Test_validacion.UsuarioPrueba("2", "Luis", "luis@email.com", "abcd", "Usuario"));
         GestorUsuariosCSV.setUsuariosPrueba(lista);
     }
@@ -29,7 +29,7 @@ public class ValidacionLoginTest {
 
     @Test
     public void testCredencialesCorrectas() {
-        assertEquals("Admin", ValidacionLogin.validar("ana@email.com", "1234"));
+        assertEquals("Administrador", ValidacionLogin.validar("ana@email.com", "1234"));
         assertEquals("Usuario", ValidacionLogin.validar("luis@email.com", "abcd"));
     }
 
