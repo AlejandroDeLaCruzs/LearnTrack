@@ -1,7 +1,11 @@
 package Vista.alumno;
 
+import Controlador.ValidacionMatricula.ValidacionMatricula;
 import Modelo.Cursos.Curso;
+import Modelo.Cursos.Calificacion;
+import Modelo.Ficheros.GestorCalificacionesCSV;
 import Modelo.Ficheros.GestorCursosCSV;
+import Modelo.Ficheros.GestorUsuariosCSV;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,17 +79,27 @@ public class MatriculacionView {
             inscribirseBtn.setFocusable(false);
 
             inscribirseBtn.addActionListener(e -> {
-                // Aquí puedes implementar tu lógica personalizada:
-                // Por ejemplo, guardar matrícula, actualizar CSV, etc.
+                // Obtener el ID del alumno (puedes obtenerlo desde una sesión o contexto)
+                String idAlumno = Modelo.Sesion.obtenerUsuario().getId(); // Asegúrate de obtener el ID del alumno actual (puede ser un valor dinámico)
 
-                JOptionPane.showMessageDialog(frame,
-                        "Inscripción confirmada a: " + curso.getNombre(),
-                        "Información",
-                        JOptionPane.INFORMATION_MESSAGE);
+                // Obtener el nombre del alumno (puedes obtenerlo desde una sesión o contexto)
+                String nombreAlumno = Modelo.Sesion.obtenerUsuario().getNombre(); // Similar al ID, este valor debe ser obtenido dinámicamente.
 
+                // Crear el objeto Calificación con calificación 'null' para el nuevo inscrito
+                boolean exito = ValidacionMatricula.inscribirAlumno(curso.getId(), idAlumno, nombreAlumno);
 
+                if (exito) {
+                    JOptionPane.showMessageDialog(frame,
+                            "Inscripción confirmada a: " + curso.getNombre(),
+                            "Información",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(frame,
+                            "Ya estás inscrito en: " + curso.getNombre(),
+                            "Aviso",
+                            JOptionPane.WARNING_MESSAGE);
+                }
             });
-
             row.add(inscribirseBtn);
             listaCursos.add(row);
             listaCursos.add(Box.createRigidArea(new Dimension(0, 5)));
