@@ -12,6 +12,7 @@ public class ValidacionLogin {
 
         List<Usuario> usuarios = GestorUsuariosCSV.cargarUsuarios();
         for (Usuario u : usuarios) {
+            System.out.println(u.getNombre());
             if (u.getCorreo().equals(correo)) {
                 if (u.getContrasena().equals(contrasena)) {
                     return u.getRol();
