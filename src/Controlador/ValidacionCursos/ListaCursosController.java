@@ -1,4 +1,4 @@
-package Controlador;
+package Controlador.ValidacionCursos;
 
 public class ListaCursosController {
 }

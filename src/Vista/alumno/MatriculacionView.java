@@ -82,6 +82,8 @@ public class MatriculacionView {
                         "Inscripción confirmada a: " + curso.getNombre(),
                         "Información",
                         JOptionPane.INFORMATION_MESSAGE);
+
+
             });
 
             row.add(inscribirseBtn);
