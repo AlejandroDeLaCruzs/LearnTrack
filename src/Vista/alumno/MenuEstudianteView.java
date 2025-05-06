@@ -45,7 +45,7 @@ public class MenuEstudianteView {
         // Acción para ver las calificaciones del estudiante
         btnMisCalificaciones.addActionListener(e -> {
             frame.dispose();  // Cierra el menú principal
-            //new CalificacionesView().mostrar();  // Abre la vista para ver calificaciones
+            new CalificacionesView().mostrar();  // Abre la vista para ver calificaciones
         });
 
         // Acción para cerrar sesión
