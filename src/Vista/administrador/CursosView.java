@@ -1,9 +1,12 @@
 package Vista.administrador;
 
+import Controlador.ValidacionCursos.ValidacionCrearCurso;
+import Controlador.ValidacionCursos.ValidacionAsignarProfesor;
+import Controlador.ValidacionCursos.ListaCursosController;
 import Modelo.Cursos.Curso;
 import Modelo.Ficheros.GestorCursosCSV;
-import Modelo.Ficheros.GestorUsuariosCSV;
 import Modelo.Usuarios.Usuario;
+import Modelo.Ficheros.GestorUsuariosCSV;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +16,9 @@ import java.util.stream.Collectors;
 public class CursosView {
     private JFrame frame;
     private JPanel listaCursos;
+    private final ListaCursosController listaCursosController = new ListaCursosController();
+    private final ValidacionCrearCurso validacionCrearCurso = new ValidacionCrearCurso();
+    private final ValidacionAsignarProfesor validacionAsignarProfesor = new ValidacionAsignarProfesor();
 
     public void mostrar() {
         frame = new JFrame("Gestión de Cursos");
@@ -20,7 +26,6 @@ public class CursosView {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel(new BorderLayout());
-
         JLabel titulo = new JLabel("Gestión de Cursos", SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 28));
         panel.add(titulo, BorderLayout.NORTH);
@@ -31,13 +36,11 @@ public class CursosView {
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(titulo, BorderLayout.CENTER);
         topPanel.add(btnAgregarCurso, BorderLayout.EAST);
-
         panel.add(topPanel, BorderLayout.NORTH);
 
         listaCursos = new JPanel();
         listaCursos.setLayout(new BoxLayout(listaCursos, BoxLayout.Y_AXIS));
         listaCursos.setBorder(BorderFactory.createEmptyBorder(20, 200, 20, 200));
-
         actualizarLista();
 
         JScrollPane scroll = new JScrollPane(listaCursos);
@@ -50,6 +53,7 @@ public class CursosView {
             frame.dispose();
             new MenuAdministradorView().mostrar();
         });
+
         JPanel abajo = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         abajo.add(btnAtras);
         panel.add(abajo, BorderLayout.SOUTH);
@@ -73,7 +77,6 @@ public class CursosView {
         JTextField campoId = new JTextField(idGenerado, 20);
         campoId.setEditable(false);
 
-
         JLabel lblNombre = new JLabel("Nombre del Curso:");
         JTextField campoNombre = new JTextField(20);
 
@@ -83,17 +86,21 @@ public class CursosView {
         JButton btnAceptar = new JButton("Aceptar");
         JButton btnCancelar = new JButton("Cancelar");
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         dialog.add(lblId, gbc);
         gbc.gridx = 1;
         dialog.add(campoId, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         dialog.add(lblNombre, gbc);
         gbc.gridx = 1;
         dialog.add(campoNombre, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
         dialog.add(errorLabel, gbc);
 
         JPanel botones = new JPanel();
@@ -106,18 +113,13 @@ public class CursosView {
         btnAceptar.addActionListener(e -> {
             String id = campoId.getText().trim();
             String nombre = campoNombre.getText().trim();
-            if (id.isEmpty() || nombre.isEmpty()) {
-                errorLabel.setText("Todos los campos son obligatorios.");
+            String error = validacionCrearCurso.validar(id, nombre);
+            if (error != null) {
+                errorLabel.setText(error);
                 return;
             }
 
             List<Curso> cursos = GestorCursosCSV.cargarCursos();
-            boolean existe = cursos.stream().anyMatch(c -> c.getId().equals(id));
-            if (existe) {
-                errorLabel.setText("Ya existe un curso con ese ID.");
-                return;
-            }
-
             cursos.add(new Curso(id, nombre, ""));
             GestorCursosCSV.guardarCursos(cursos);
             dialog.dispose();
@@ -141,7 +143,7 @@ public class CursosView {
         listaCursos.add(header);
         listaCursos.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        List<Curso> cursos = GestorCursosCSV.cargarCursos();
+        List<Curso> cursos = listaCursosController.obtenerCursos();
         for (Curso curso : cursos) {
             JPanel row = new JPanel(new GridLayout(1, 4));
             row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -150,6 +152,7 @@ public class CursosView {
 
             row.add(new JLabel(curso.getId()));
             row.add(new JLabel(curso.getNombre()));
+
             String idProfesor = curso.getIdProfesorAsignado();
             String nombreProfesor = "No hay profesor asignado";
             if (!idProfesor.equals("No hay profesor asignado")) {
@@ -177,21 +180,13 @@ public class CursosView {
                         "¿Estás seguro de que deseas eliminar el curso?",
                         "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    List<Curso> Cursos = GestorCursosCSV.cargarCursos();
-                    cursos.removeIf(c -> c.getId().equals(curso.getId()));
-                    GestorCursosCSV.guardarCursos(cursos);
+                    listaCursosController.eliminarCurso(curso.getId());
                     actualizarLista();
                 }
             });
             acciones.add(btnEliminar);
 
             row.add(acciones);
-
-            btnAsignar.setEnabled(true);  // Permitir reasignación
-
-            btnAsignar.addActionListener(e -> asignarProfesor(curso));
-            row.add(btnAsignar);
-
             listaCursos.add(row);
             listaCursos.add(Box.createRigidArea(new Dimension(0, 5)));
         }
@@ -199,6 +194,7 @@ public class CursosView {
         listaCursos.revalidate();
         listaCursos.repaint();
     }
+
 
     private void asignarProfesor(Curso curso) {
         JDialog dialog = new JDialog(frame, "Seleccionar Profesor", true);
@@ -258,10 +254,10 @@ public class CursosView {
         do {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < 2; i++) {
-                sb.append(letras.charAt((int)(Math.random() * letras.length())));
+                sb.append(letras.charAt((int) (Math.random() * letras.length())));
             }
             for (int i = 0; i < 3; i++) {
-                sb.append((int)(Math.random() * 10));
+                sb.append((int) (Math.random() * 10));
             }
             id = sb.toString();
 
@@ -273,7 +269,6 @@ public class CursosView {
 
         return id;
     }
-
 
 
 }
