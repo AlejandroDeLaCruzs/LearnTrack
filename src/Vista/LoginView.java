@@ -121,12 +121,23 @@ public class LoginView {
                     }
                     break;
                 case "Profesor":
-                    String cursoAsignado = GestorCursosCSV.obtenerCursoPorProfesor(correo);
-                    if (cursoAsignado == null) {
-                        JOptionPane.showMessageDialog(frame, "No tienes asignado un curso.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                    Usuario usuarioProfesor = GestorUsuariosCSV.cargarUsuarios()
+                            .stream()
+                            .filter(u -> u.getCorreo().equalsIgnoreCase(correo))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (usuarioProfesor != null) {
+                        Modelo.Sesion.establecerUsuario(usuarioProfesor);
+                        String cursoAsignado = GestorCursosCSV.obtenerCursoPorProfesorPorNombre(usuarioProfesor.getNombre());
+                        if (cursoAsignado == null) {
+                            JOptionPane.showMessageDialog(frame, "No tienes asignado un curso.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            frame.dispose();
+                            new ProfesorView(cursoAsignado).mostrar();
+                        }
                     } else {
-                        frame.dispose();
-                        new ProfesorView(cursoAsignado).mostrar();
+                        mensajeErrorGeneral.setText("Error interno: profesor no encontrado.");
                     }
                     break;
 
