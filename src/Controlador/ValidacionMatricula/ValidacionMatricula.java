@@ -18,7 +18,7 @@ public class ValidacionMatricula {
         }
 
         // Agregar nueva calificación con calificación null
-        Calificacion nueva = new Calificacion(idCurso, idAlumno, nombreAlumno, null);
+        Calificacion nueva = new Calificacion(idCurso, idAlumno, nombreAlumno, "-");
         calificaciones.add(nueva);
         GestorCalificacionesCSV.guardarCalificaciones(calificaciones);
         return true;

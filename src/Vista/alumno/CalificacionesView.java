@@ -53,10 +53,11 @@ public class CalificacionesView {
     private void cargarNotas() {
         panelNotas.removeAll();
 
-        JPanel header = new JPanel(new GridLayout(1, 3));
+        JPanel header = new JPanel(new GridLayout(1, 4));
         header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         header.add(new JLabel("ID Curso"));
         header.add(new JLabel("Nombre Curso"));
+        header.add(new JLabel("Profesor"));
         header.add(new JLabel("Calificación"));
         panelNotas.add(header);
         panelNotas.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -68,7 +69,7 @@ public class CalificacionesView {
         for (Calificacion c : calificaciones) {
             if (!c.getIdAlumno().equals(idAlumno)) continue;
 
-            JPanel fila = new JPanel(new GridLayout(1, 3));
+            JPanel fila = new JPanel(new GridLayout(1, 4));
             fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
             fila.setBackground(new Color(245, 245, 245));
             fila.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.GRAY));
@@ -82,7 +83,15 @@ public class CalificacionesView {
                     .orElse("Desconocido");
             fila.add(new JLabel(nombreCurso));
 
-            String nota = c.getCalificacion() == null ? "Sin calificar" : c.getCalificacion();
+            String nombreProfesor = cursos.stream()
+                    .filter(cur -> cur.getId().equals(c.getIdCurso()))
+                    .map(Curso::getNombre) // Usa directamente el ID si no tienes el nombre.
+                    .findFirst()
+                    .orElse("Desconocido");
+
+            fila.add(new JLabel(nombreProfesor));
+
+            String nota = c.getCalificacion().equals("-") ? "Sin calificar" : c.getCalificacion();
             fila.add(new JLabel(nota));
 
             panelNotas.add(fila);
