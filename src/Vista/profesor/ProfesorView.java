@@ -29,31 +29,40 @@ public class ProfesorView {
         titulo.setFont(new Font("Arial", Font.BOLD, 26));
         panelPrincipal.add(titulo, BorderLayout.NORTH);
 
-        // Cargar calificaciones del curso
         calificaciones = GestorCalificacionesCSV.cargarCalificaciones().stream()
                 .filter(c -> c.getIdCurso().equals(idCurso))
                 .toList();
 
         JPanel panelTabla = new JPanel();
         panelTabla.setLayout(new BoxLayout(panelTabla, BoxLayout.Y_AXIS));
-        panelTabla.setBorder(BorderFactory.createEmptyBorder(30, 200, 30, 200));
+        panelTabla.setBorder(BorderFactory.createEmptyBorder(30, 400, 30, 400)); // reduce ancho general
 
         JPanel header = new JPanel(new GridLayout(1, 3));
-        header.add(new JLabel("ID del Alumno"));
-        header.add(new JLabel("Nombre"));
-        header.add(new JLabel("Calificación"));
+        header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        header.setBackground(new Color(220, 220, 220));
+        header.add(new JLabel("ID del Alumno", SwingConstants.CENTER));
+        header.add(new JLabel("Nombre", SwingConstants.CENTER));
+        header.add(new JLabel("Calificación", SwingConstants.CENTER));
         panelTabla.add(header);
         panelTabla.add(Box.createRigidArea(new Dimension(0, 10)));
 
         for (Calificacion c : calificaciones) {
             JPanel fila = new JPanel(new GridLayout(1, 3));
-            fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+            fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+            fila.setBackground(new Color(245, 245, 245));
+            fila.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.GRAY));
 
-            fila.add(new JLabel(c.getIdAlumno()));
-            fila.add(new JLabel(c.getNombreAlumno()));
+            JLabel idLabel = new JLabel(c.getIdAlumno(), SwingConstants.CENTER);
+            JLabel nombreLabel = new JLabel(c.getNombreAlumno(), SwingConstants.CENTER);
 
             JTextField campo = new JTextField(c.getCalificacion(), 5);
+            campo.setHorizontalAlignment(JTextField.CENTER);
+            campo.setPreferredSize(new Dimension(80, 30));
+
             camposNotas.put(c.getIdAlumno(), campo);
+
+            fila.add(idLabel);
+            fila.add(nombreLabel);
             fila.add(campo);
 
             panelTabla.add(fila);
@@ -83,13 +92,52 @@ public class ProfesorView {
         frame.setVisible(true);
     }
 
+
+
     private void guardarCambios() {
-        for (Calificacion c : calificaciones) {
-            String nuevaNota = camposNotas.get(c.getIdAlumno()).getText().trim();
-            c.setCalificacion(nuevaNota);
+        boolean hayErrores = false;
+
+        // Primero, quitamos cualquier mensaje previo
+        Component[] filas = ((JPanel)((JScrollPane)frame.getContentPane().getComponent(1)).getViewport().getView()).getComponents();
+        for (Component comp : filas) {
+            if (comp instanceof JPanel fila && fila.getComponentCount() == 4) {
+                fila.remove(3); // quitar mensaje de error anterior
+            }
         }
 
-        // Sobrescribimos todas las calificaciones
+        for (Calificacion c : calificaciones) {
+            String textoNota = camposNotas.get(c.getIdAlumno()).getText().trim();
+            double valor;
+            boolean notaValida = true;
+
+            try {
+                valor = Double.parseDouble(textoNota);
+                if (valor < 0 || valor > 10) {
+                    notaValida = false;
+                }
+            } catch (NumberFormatException e) {
+                notaValida = false;
+            }
+
+            if (!notaValida) {
+                hayErrores = true;
+                JPanel fila = (JPanel) camposNotas.get(c.getIdAlumno()).getParent();
+                JLabel error = new JLabel("Calificación no válida (0 - 10)");
+                error.setForeground(Color.RED);
+                fila.add(error); // Añadimos el mensaje de error como 4º componente
+                fila.revalidate();
+                fila.repaint();
+            } else {
+                c.setCalificacion(textoNota);
+            }
+        }
+
+        if (hayErrores) {
+            JOptionPane.showMessageDialog(frame, "Corrige las calificaciones no válidas antes de guardar.", "Error de validación", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Sobrescribimos todas las calificaciones válidas
         List<Calificacion> todas = GestorCalificacionesCSV.cargarCalificaciones();
         for (Calificacion c : todas) {
             if (c.getIdCurso().equals(idCurso)) {
@@ -103,4 +151,5 @@ public class ProfesorView {
         GestorCalificacionesCSV.guardarCalificaciones(todas);
         JOptionPane.showMessageDialog(frame, "Calificaciones guardadas correctamente.");
     }
+
 }
