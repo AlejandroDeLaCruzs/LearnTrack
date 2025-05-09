@@ -61,13 +61,14 @@ public class GestorCursosCSV {
         return letras + numeros;
     }
 
-    public static String obtenerCursoPorProfesor(String correoProfesor) {
+    public static String obtenerCursoPorProfesorPorNombre(String nombreProfesor) {
         List<Curso> cursos = cargarCursos();
         for (Curso c : cursos) {
-            if (correoProfesor.equals(c.getIdProfesorAsignado())) {
+            if (nombreProfesor.equalsIgnoreCase(c.getIdProfesorAsignado())) {
                 return c.getId();
             }
         }
         return null;
     }
+
 }

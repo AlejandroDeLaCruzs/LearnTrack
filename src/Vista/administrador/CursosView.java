@@ -120,11 +120,21 @@ public class CursosView {
             }
 
             List<Curso> cursos = GestorCursosCSV.cargarCursos();
+
+            // Validación: no repetir nombre
+            boolean nombreExiste = cursos.stream()
+                    .anyMatch(c -> c.getNombre().equalsIgnoreCase(nombre));
+            if (nombreExiste) {
+                errorLabel.setText("Nombre ya existente");
+                return;
+            }
+
             cursos.add(new Curso(id, nombre, ""));
             GestorCursosCSV.guardarCursos(cursos);
             dialog.dispose();
             actualizarLista();
         });
+
 
         btnCancelar.addActionListener(e -> dialog.dispose());
 
@@ -169,8 +179,7 @@ public class CursosView {
 
             JPanel acciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
-            JButton btnAsignar = new JButton("Asignar profesor");
-            btnAsignar.setEnabled(nombreProfesor.equals("No hay profesor asignado"));
+            JButton btnAsignar = new JButton(idProfesor.equals("No hay profesor asignado") ? "Asignar profesor" : "Cambiar profesor");
             btnAsignar.addActionListener(e -> asignarProfesor(curso));
             acciones.add(btnAsignar);
 
@@ -204,11 +213,6 @@ public class CursosView {
 
         List<Usuario> profesoresDisponibles = GestorUsuariosCSV.cargarUsuarios().stream()
                 .filter(u -> u.getRol().equals("Profesor"))
-                .filter(u -> {
-                    String idCursoActual = curso.getId();
-                    return !GestorCursosCSV.profesorYaAsignado(u.getNombre(), idCursoActual);
-                })
-
                 .collect(Collectors.toList());
 
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -220,6 +224,10 @@ public class CursosView {
         JScrollPane scroll = new JScrollPane(lista);
         dialog.add(scroll, BorderLayout.CENTER);
 
+        JLabel errorLabel = new JLabel("");
+        errorLabel.setForeground(Color.RED);
+        dialog.add(errorLabel, BorderLayout.NORTH);
+
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton aceptar = new JButton("Aceptar");
         JButton cancelar = new JButton("Cancelar");
@@ -230,11 +238,28 @@ public class CursosView {
         aceptar.addActionListener(e -> {
             String seleccionado = lista.getSelectedValue();
             if (seleccionado != null) {
+                // Verificar si ya está asignado a este curso
+                if (seleccionado.equals(curso.getIdProfesorAsignado())) {
+                    errorLabel.setText("Profesor ya asignado a este curso");
+                    return;
+                }
+
+                // Verificar si el profesor está asignado a otro curso
+                boolean yaAsignado = GestorCursosCSV.cargarCursos().stream()
+                        .anyMatch(c -> c.getIdProfesorAsignado().equals(seleccionado) && !c.getId().equals(curso.getId()));
+
+                if (yaAsignado) {
+                    errorLabel.setText("Profesor ya asignado a otro curso");
+                    return;
+                }
+
+                // Asignar el profesor
                 curso.setIdProfesorAsignado(seleccionado);
                 List<Curso> cursos = GestorCursosCSV.cargarCursos();
                 cursos.stream().filter(c -> c.getId().equals(curso.getId()))
                         .forEach(c -> c.setIdProfesorAsignado(seleccionado));
                 GestorCursosCSV.guardarCursos(cursos);
+
                 dialog.dispose();
                 actualizarLista();
             }
@@ -246,29 +271,30 @@ public class CursosView {
     }
 
     private String generarIdCursoUnico() {
-        String letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         List<Curso> existentes = GestorCursosCSV.cargarCursos();
-        String id;
-        boolean existe;
 
-        do {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 2; i++) {
-                sb.append(letras.charAt((int) (Math.random() * letras.length())));
+        String maxId = existentes.stream()
+                .map(Curso::getId)
+                .filter(id -> id.matches("[A-Z]{2}[0-9]{3}"))
+                .max(String::compareTo)
+                .orElse("AA000");
+
+        char letra1 = maxId.charAt(0);
+        char letra2 = maxId.charAt(1);
+        int numero = Integer.parseInt(maxId.substring(2));
+
+        if (numero == 999) {
+            numero = 0;
+            if (letra2 == 'Z') {
+                letra2 = 'A';
+                letra1++;
+            } else {
+                letra2++;
             }
-            for (int i = 0; i < 3; i++) {
-                sb.append((int) (Math.random() * 10));
-            }
-            id = sb.toString();
+        } else {
+            numero++;
+        }
 
-            // Esta variable hace que id no se use directamente dentro del lambda
-            String finalId = id;
-            existe = existentes.stream().anyMatch(c -> c.getId().equals(finalId));
-
-        } while (existe);
-
-        return id;
+        return "" + letra1 + letra2 + String.format("%03d", numero);
     }
-
-
 }

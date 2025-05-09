@@ -6,6 +6,7 @@ import Modelo.Usuarios.*;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 public class UsuariosController {
 
@@ -66,21 +67,34 @@ public class UsuariosController {
     }
 
     private String generarIdUnico(List<Usuario> usuarios) {
-        String nuevoId;
-        Random random = new Random();
-        boolean idDuplicado;
+        if (usuarios.isEmpty()) return "A000";
 
-        do {
-            char letra = (char) ('A' + random.nextInt(26));
-            int numeros = random.nextInt(900) + 100; // de 100 a 999
-            nuevoId = letra + String.valueOf(numeros);
+        String maxId = usuarios.stream()
+                .map(Usuario::getId)
+                .max(Comparator.comparing(this::idToComparable))
+                .orElse("A000");
 
-            final String idFinal = nuevoId; // 💥 aquí hacemos copia final para usar en lambda
-            idDuplicado = usuarios.stream().anyMatch(u -> u.getId().equals(idFinal));
-        } while (idDuplicado);
+        // Convertir el ID máximo a la siguiente secuencia
+        char letra = maxId.charAt(0);
+        int numero = Integer.parseInt(maxId.substring(1));
 
-        return nuevoId;
+        if (numero == 999) {
+            letra++;
+            numero = 0;
+        } else {
+            numero++;
+        }
+
+        return String.format("%c%03d", letra, numero);
     }
+
+    // Utilidad para comparar IDs correctamente
+    private int idToComparable(String id) {
+        char letra = id.charAt(0);
+        int numero = Integer.parseInt(id.substring(1));
+        return (letra - 'A') * 1000 + numero;
+    }
+
 
     private String generarContrasena() {
         Random random = new Random();
