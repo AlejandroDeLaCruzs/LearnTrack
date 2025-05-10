@@ -12,6 +12,7 @@ import java.util.List;
 public class ProfesorView {
     private JFrame frame;
     private String idCurso;
+    private String nombreCurso;
     private List<Calificacion> calificaciones;
     private Map<String, JTextField> camposNotas = new HashMap<>();
     private Map<String, JLabel> etiquetasErrores = new HashMap<>();
@@ -19,6 +20,7 @@ public class ProfesorView {
 
     public ProfesorView(String idCurso) {
         this.idCurso = idCurso;
+        this.nombreCurso = Modelo.Ficheros.GestorCursosCSV.obtenerNombreCursoPorId(idCurso);
     }
 
     public void mostrar() {
@@ -27,7 +29,7 @@ public class ProfesorView {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panelPrincipal = new JPanel(new BorderLayout());
-        JLabel titulo = new JLabel("Alumnos del Curso: " + idCurso, SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Alumnos del Curso: " + nombreCurso, SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 26));
         panelPrincipal.add(titulo, BorderLayout.NORTH);
 
