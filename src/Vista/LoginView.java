@@ -92,11 +92,34 @@ public class LoginView {
             String correo = campoCorreo.getText().trim();
             String contrasena = new String(campoContrasena.getPassword()).trim();
 
+            // Paso 1: Ambos campos vacíos
+            boolean correoVacio = correo.isEmpty();
+            boolean contrasenaVacia = contrasena.isEmpty();
+
+            if (correoVacio && contrasenaVacia) {
+                mensajeErrorCorreo.setText("Rellene el correo");
+                mensajeErrorContrasena.setText("Rellene la contraseña");
+                return;
+            }
+
+            // Paso 2: Solo uno vacío
+            if (correoVacio) {
+                mensajeErrorCorreo.setText("Rellene el correo");
+                return;
+            }
+
+            if (contrasenaVacia) {
+                mensajeErrorContrasena.setText("Rellene la contraseña");
+                return;
+            }
+
+            // Paso 3: Validar formato de correo
             if (!correo.contains("@") || !(correo.endsWith(".com") || correo.endsWith(".es"))) {
                 mensajeErrorCorreo.setText("No cumple con los criterios (@, .com, .es)");
                 return;
             }
 
+            // Paso 4 y 5: Validar credenciales
             String resultado = ValidacionLogin.validar(correo, contrasena);
 
             switch (resultado) {
@@ -140,28 +163,18 @@ public class LoginView {
                         mensajeErrorGeneral.setText("Error interno: profesor no encontrado.");
                     }
                     break;
-
-
                 case "El correo no existe":
                     mensajeErrorCorreo.setText(resultado);
                     break;
                 case "Contraseña incorrecta":
                     mensajeErrorContrasena.setText(resultado);
                     break;
-                case "Rellene el correo":
-                    mensajeErrorCorreo.setText(resultado);
-                    break;
-                case "Rellene la contraseña":
-                    mensajeErrorContrasena.setText(resultado);
-                    break;
-                case "Rellene los datos":
-                    mensajeErrorGeneral.setText(resultado);
-                    break;
                 default:
                     mensajeErrorGeneral.setText(resultado);
                     break;
             }
         });
+
 
         frame.setContentPane(panelPrincipal);
         frame.setVisible(true);
