@@ -122,7 +122,7 @@ public class ProfesorView {
             String textoNota = campo.getText().trim();
 
             if (textoNota.isEmpty()) {
-                textoNota = "-";
+                textoNota = "-"; // ✅ valor por defecto para vacío
                 c.setCalificacion(textoNota);
                 continue;
             }
