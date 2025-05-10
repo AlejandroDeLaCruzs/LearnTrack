@@ -175,7 +175,6 @@ public class LoginView {
             }
         });
 
-
         frame.setContentPane(panelPrincipal);
         frame.setVisible(true);
     }
