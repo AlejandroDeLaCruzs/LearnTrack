@@ -121,8 +121,9 @@ public class ProfesorView {
             JTextField campo = camposNotas.get(c.getIdAlumno());
             String textoNota = campo.getText().trim();
 
-            if (textoNota.isEmpty()) {
-                textoNota = "-"; // ✅ valor por defecto para vacío
+            // Tratar "-" como vacío
+            if (textoNota.isEmpty() || textoNota.equals("-")) {
+                textoNota = "-"; // valor por defecto para vacío o "-"
                 c.setCalificacion(textoNota);
                 continue;
             }
@@ -166,4 +167,5 @@ public class ProfesorView {
         GestorCalificacionesCSV.guardarCalificaciones(todas);
         JOptionPane.showMessageDialog(frame, "Calificaciones guardadas correctamente.");
     }
+
 }
