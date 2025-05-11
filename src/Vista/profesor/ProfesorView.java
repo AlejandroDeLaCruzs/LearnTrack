@@ -15,7 +15,6 @@ public class ProfesorView {
     private String nombreCurso;
     private List<Calificacion> calificaciones;
     private Map<String, JTextField> camposNotas = new HashMap<>();
-    private Map<String, JLabel> etiquetasErrores = new HashMap<>();
 
 
     public ProfesorView(String idCurso) {
@@ -52,10 +51,6 @@ public class ProfesorView {
         panelTabla.add(Box.createRigidArea(new Dimension(0, 10)));
 
         for (Calificacion c : calificaciones) {
-            // Panel que contiene fila de datos y error externo
-            JPanel filaCompleta = new JPanel();
-            filaCompleta.setLayout(new BoxLayout(filaCompleta, BoxLayout.X_AXIS));
-
             // Fila con datos (3 columnas)
             JPanel fila = new JPanel(new GridLayout(1, 3));
             fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -74,17 +69,7 @@ public class ProfesorView {
             fila.add(nombreLabel);
             fila.add(campo);
 
-            // Etiqueta de error a la derecha de la fila
-            JLabel errorLabel = new JLabel(" ");
-            errorLabel.setForeground(Color.RED);
-            errorLabel.setPreferredSize(new Dimension(250, 30));
-            etiquetasErrores.put(c.getIdAlumno(), errorLabel);
-
-            filaCompleta.add(fila);
-            filaCompleta.add(Box.createRigidArea(new Dimension(10, 0)));
-            filaCompleta.add(errorLabel);
-
-            panelTabla.add(filaCompleta);
+            panelTabla.add(fila);
             panelTabla.add(Box.createRigidArea(new Dimension(0, 5)));
         }
 
@@ -115,7 +100,6 @@ public class ProfesorView {
         boolean hayErrores = false;
 
         // Limpiar errores previos
-        etiquetasErrores.values().forEach(label -> label.setText(""));
 
         for (Calificacion c : calificaciones) {
             JTextField campo = camposNotas.get(c.getIdAlumno());
@@ -142,7 +126,6 @@ public class ProfesorView {
 
             if (!notaValida) {
                 hayErrores = true;
-                etiquetasErrores.get(c.getIdAlumno()).setText("Calificación no válida (0 - 10)");
             } else {
                 c.setCalificacion(textoNota);
             }
