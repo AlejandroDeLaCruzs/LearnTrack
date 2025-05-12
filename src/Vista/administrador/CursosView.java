@@ -75,7 +75,6 @@ public class CursosView {
         JLabel lblId = new JLabel("ID del Curso:");
         String idGenerado = generarIdCursoUnico();
         JTextField campoId = new JTextField(idGenerado, 20);
-        campoId.setEditable(false);
 
         JLabel lblNombre = new JLabel("Nombre del Curso:");
         JTextField campoNombre = new JTextField(20);
