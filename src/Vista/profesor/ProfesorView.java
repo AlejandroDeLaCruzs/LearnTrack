@@ -90,7 +90,7 @@ public class ProfesorView {
 
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton guardar = new JButton("Guardar calificaciones");
-        JButton volver = new JButton("Volver");
+        JButton volver = new JButton("Cerrar Sesión");
 
         guardar.addActionListener(e -> guardarCambios());
         volver.addActionListener(e -> {

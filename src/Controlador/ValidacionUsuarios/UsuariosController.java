@@ -1,5 +1,7 @@
 package Controlador.ValidacionUsuarios;
 
+import Modelo.Cursos.Calificacion;
+import Modelo.Ficheros.GestorCalificacionesCSV;
 import Modelo.Ficheros.GestorUsuariosCSV;
 import Modelo.Usuarios.*;
 
@@ -62,6 +64,11 @@ public class UsuariosController {
                 .stream()
                 .filter(u -> !u.getId().equals(idAEliminar))
                 .collect(Collectors.toList());
+
+        List<Calificacion> calificacions = GestorCalificacionesCSV.cargarCalificaciones();
+        calificacions.removeIf(c -> c.getIdAlumno().equals(idAEliminar));
+
+        GestorCalificacionesCSV.guardarCalificaciones(calificacions);
 
         GestorUsuariosCSV.guardarUsuarios(actualizados);
     }

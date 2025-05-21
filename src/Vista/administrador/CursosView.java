@@ -18,7 +18,7 @@ public class CursosView {
     private JPanel listaCursos;
     private final ListaCursosController listaCursosController = new ListaCursosController();
     private final ValidacionCrearCurso validacionCrearCurso = new ValidacionCrearCurso();
-    private final ValidacionAsignarProfesor validacionAsignarProfesor = new ValidacionAsignarProfesor();
+
 
     public void mostrar() {
         frame = new JFrame("Gestión de Cursos");
