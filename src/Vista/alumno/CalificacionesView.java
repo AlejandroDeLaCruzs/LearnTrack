@@ -4,6 +4,8 @@ import Modelo.Cursos.Calificacion;
 import Modelo.Cursos.Curso;
 import Modelo.Ficheros.GestorCalificacionesCSV;
 import Modelo.Ficheros.GestorCursosCSV;
+import Modelo.Ficheros.GestorUsuariosCSV;
+import Modelo.Usuarios.Usuario;
 
 
 import javax.swing.*;
@@ -64,8 +66,10 @@ public class CalificacionesView {
 
         List<Calificacion> calificaciones = GestorCalificacionesCSV.cargarCalificaciones();
         List<Curso> cursos = GestorCursosCSV.cargarCursos();
+        List<Usuario> usuarios = GestorUsuariosCSV.cargarUsuarios();
 
-        String idAlumno = Modelo.Sesion.obtenerUsuario().getId(); // Esto lo deberías definir tú
+        String idAlumno = Modelo.Sesion.obtenerUsuario().getId();
+
         for (Calificacion c : calificaciones) {
             if (!c.getIdAlumno().equals(idAlumno)) continue;
 
@@ -76,21 +80,31 @@ public class CalificacionesView {
 
             fila.add(new JLabel(c.getIdCurso()));
 
-            String nombreCurso = cursos.stream()
+            // Obtener el curso correspondiente
+            Curso curso = cursos.stream()
                     .filter(cur -> cur.getId().equals(c.getIdCurso()))
-                    .map(Curso::getNombre)
                     .findFirst()
-                    .orElse("Desconocido");
+                    .orElse(null);
+
+            // Obtener el nombre del curso
+            String nombreCurso = (curso != null) ? curso.getNombre() : "Desconocido";
             fila.add(new JLabel(nombreCurso));
 
-            String nombreProfesor = cursos.stream()
-                    .filter(cur -> cur.getId().equals(c.getIdCurso()))
-                    .map(Curso::getNombre) // Usa directamente el ID si no tienes el nombre.
-                    .findFirst()
-                    .orElse("Desconocido");
-
+            // Obtener nombre del profesor si está asignado
+            String nombreProfesor = "No hay profesor asignado";
+            if (curso != null) {
+                String idProfesor = curso.getIdProfesorAsignado();
+                if (!idProfesor.equals("No hay profesor asignado")) {
+                    nombreProfesor = usuarios.stream()
+                            .filter(u -> u.getNombre().equals(idProfesor)) // <- aquí usamos nombre en vez de ID
+                            .map(Usuario::getNombre)
+                            .findFirst()
+                            .orElse("No hay profesor asignado");
+                }
+            }
             fila.add(new JLabel(nombreProfesor));
 
+            // Obtener calificación
             String nota = c.getCalificacion().equals("-") ? "Sin calificar" : c.getCalificacion();
             fila.add(new JLabel(nota));
 

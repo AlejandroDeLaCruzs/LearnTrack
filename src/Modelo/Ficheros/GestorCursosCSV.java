@@ -71,4 +71,13 @@ public class GestorCursosCSV {
         return null;
     }
 
+    public static String obtenerNombreCursoPorId(String idCurso) {
+        for (Curso c : cargarCursos()) {
+            if (c.getId().equals(idCurso)) {
+                return c.getNombre();
+            }
+        }
+        return "Desconocido";
+    }
+
 }
