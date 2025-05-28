@@ -91,4 +91,4 @@ LearnTrack está diseñado siguiendo el patrón **Modelo-Vista-Controlador (MVC)
 ### 🔁 Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/learntrack.git
+https://github.com/AlejandroDeLaCruzs/learntrack.git
