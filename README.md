@@ -1,68 +1,95 @@
 # LearnTrack
 
-**LearnTrack** es una aplicación de escritorio desarrollada en Java que funciona como un sistema de gestión del aprendizaje (LMS - Learning Management System). Está diseñada para gestionar cursos y usuarios en entornos educativos sin necesidad de conexión a internet, utilizando archivos locales en formato `.csv`.
+**LearnTrack** es un sistema de gestión del aprendizaje (LMS) desarrollado como una aplicación de escritorio en Java. Está orientado a entornos educativos donde no se dispone de conexión a internet, utilizando archivos locales `.csv` para manejar usuarios, cursos y calificaciones. Es parte de un proyecto académico del Grado en Ingeniería Informática (curso 2024/25).
 
-## 🚀 Propósito
+## 📌 Propósito
 
-LearnTrack tiene como objetivo mejorar la administración de cursos, evaluación y comunicación entre administradores, profesores y estudiantes. Se busca reducir el tiempo de gestión en un 50% y mejorar el acceso a materiales para el 90% de los estudiantes, siendo utilizable con solo 5 minutos de capacitación.
+Proporcionar una solución ligera y funcional para la administración de cursos, evaluación y seguimiento del rendimiento académico sin necesidad de infraestructura en la nube.
 
-## 🧩 Características principales
+## 🎯 Objetivos
 
-- Gestión local de usuarios y cursos usando archivos `.csv`.
-- Interfaz gráfica basada en Java Swing.
-- Rol de usuario definido: Administrador, Profesor, Estudiante.
-- Acceso y funcionalidades diferenciadas por rol.
-- Calificación, inscripción, creación y eliminación de cursos.
+- Reducir el tiempo de gestión de cursos en un 50%.
+- Facilitar el acceso a materiales para el 90% de los estudiantes.
+- Ser completamente funcional tras 5 minutos de uso inicial.
 
-## 🖥️ Tecnologías
+## 🛠️ Tecnologías
 
 - **Lenguaje:** Java 17
-- **Interfaz gráfica:** Swing
-- **Formato de datos:** Archivos `.csv` (sin base de datos)
-- **Requisitos mínimos del sistema:**
-  - Java Runtime Environment (JRE) 17 o superior
+- **GUI:** Java Swing
+- **Almacenamiento:** Archivos `.csv` (usuarios, cursos, matrículas)
+- **Arquitectura:** MVC (Modelo-Vista-Controlador)
+
+## 🧱 Arquitectura del sistema
+
+El sistema está organizado según el patrón MVC:
+
+- **Modelo:** Gestiona los datos del sistema (usuarios, cursos, matrículas).
+- **Vista:** Interfaz gráfica mediante paneles Swing (JPanel).
+- **Controlador:** Lógica de negocio (login, registro, asignaciones, evaluaciones).
+
+## 🖥️ Requisitos del sistema
+
+- **Software:** Java Runtime Environment (JRE) 17+
+- **Sistemas operativos soportados:**
+  - Windows 10+
+  - macOS 11+
+  - Linux (Ubuntu 20.04+)
+- **Hardware mínimo:**
   - 4 GB de RAM
   - 500 MB de almacenamiento
-  - Compatible con Windows 10+, macOS 11+ y distribuciones populares de Linux (Ubuntu 20.04+)
 
-## 📋 Casos de Uso Principales
+## 👤 Roles de usuario
 
-- **CU-1:** Inicio de sesión (Estudiantes, Profesores, Administradores)
-- **CU-2:** Registro de usuarios (Administrador)
-- **CU-3:** Creación de cursos (Administrador)
-- **CU-4:** Asignación de profesores (Administrador)
-- **CU-5:** Eliminación de cursos (Administrador)
-- **CU-6:** Inscripción de estudiantes en cursos
-- **CU-7:** Evaluación de estudiantes (Profesor)
-- **CU-8:** Consulta de calificaciones (Estudiante)
+- **Administrador:** Registra usuarios y cursos, asigna profesores.
+- **Profesor:** Califica estudiantes de sus cursos.
+- **Estudiante:** Se inscribe a cursos y consulta sus calificaciones.
 
-## 📈 Requisitos de rendimiento
+## 📚 Funcionalidades principales
 
-- El 95% de las operaciones deben ejecutarse en menos de 1 segundo.
-- Soporte para hasta 1,000 cursos y 5,000 estudiantes.
+- Inicio de sesión por roles
+- Registro y eliminación de usuarios
+- Creación y eliminación de cursos
+- Asignación de profesores a cursos
+- Inscripción de estudiantes
+- Calificación y consulta de notas
 
-## 📦 Estructura de Datos (Archivos)
+## 🖼️ Diseño de interfaz
 
-- **Usuarios:** `id`, `nombre`, `correo`, `contraseña`, `rol`
-- **Cursos:** `id`, `nombre`, `id_profesor`
-- **Matrículas:** `id_usuario`, `id_curso`, `calificación`
+Cada rol accede a vistas específicas en la aplicación, por ejemplo:
+
+- **Administrador:** Panel de usuarios y cursos con gestión completa.
+- **Profesor:** Lista de estudiantes y campos para notas.
+- **Estudiante:** Vistas para inscribirse y ver notas.
+
+La interfaz es dinámica y se adapta al rol una vez iniciada la sesión.
+
+## 📊 Requisitos de rendimiento
+
+- El 95% de las operaciones deben completarse en menos de 1 segundo.
+- Soporta hasta 1,000 cursos y 5,000 registros.
+
+## 📦 Estructura de archivos `.csv`
+
+- `usuarios.csv`: `id`, `nombre`, `correo`, `contraseña`, `rol`
+- `cursos.csv`: `id`, `nombre`, `id_profesor`
+- `matriculas.csv`: `id_usuario`, `id_curso`, `calificación`
 
 ## 🔐 Seguridad
 
-- Autenticación mediante correo y contraseña (texto plano, con posibilidad de mejora).
+- Autenticación básica mediante correo y contraseña (almacenadas en texto plano).
 - No requiere conexión a internet.
 
-## 🔮 Planes Futuros
+## 📈 Planes futuros
 
-- Migración a una base de datos distribuida como PostgreSQL/MySQL.
-- Sincronización en tiempo real.
-- Escalabilidad para más de 1,000 usuarios simultáneos.
+- Migración a base de datos SQL (PostgreSQL/MySQL).
+- Sincronización en la nube y uso multiusuario.
+- Mejora de seguridad y cifrado de contraseñas.
 
 ## 📅 Cronograma
 
-- **Entrega del documento IEEE 830:** 10 de marzo de 2025
-- **Primera versión funcional:** Dentro de 3 meses desde la aprobación del documento SRS.
+- 📄 Entrega de documento IEEE 830: 10 de marzo de 2025
+- 🚀 Primera versión funcional: dentro de los 3 meses posteriores a la aprobación
 
 ---
 
-Desarrollado como parte de la asignatura **Ingeniería del Software - Grado en Ingeniería Informática (2024/25)**.
+Proyecto académico desarrollado para la asignatura **Ingeniería del Software**, Grado en Ingeniería Informática, curso 2024/25 – Grupos 2INP y 2IIP.
